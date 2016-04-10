@@ -604,7 +604,9 @@ class redisDb
 
     /**
      * 选择数据库
+     *
      * @param int $dbId 数据库ID号
+     *
      * @return bool
      */
     public function select($dbId)
@@ -612,4 +614,149 @@ class redisDb
         return $this->redis->select($dbId);
     }
 
+    public function flushDb()
+    {
+        return $this->redis->flushDB();
+    }
+
+    public function info()
+    {
+        return $this->redis->info();
+    }
+
+    public function save()
+    {
+        return $this->redis->save();
+    }
+
+    /**
+     * 异步保存到数据
+     * @return bool
+     */
+    public function bgSave()
+    {
+        return $this->redis->bgsave();
+    }
+
+    public function lastSave()
+    {
+        return $this->redis->lastSave();
+    }
+
+    /**
+     * 返回key,支持*多个字符，?一个字符
+     * 只有*　表示全部
+     * @param string $key
+     * @return array
+     */
+    public function keys($key)
+    {
+        return $this->redis->keys($key);
+    }
+
+    public function del($key)
+    {
+        return $this->redis->del($key);
+    }
+
+    public function exits($key)
+    {
+        return $this->redis->exists($key);
+    }
+
+    public function expire($key,$expire)
+    {
+        return $this->redis->expire($key,$expire);
+    }
+
+    /**
+      * 返回一个key还有多久过期，单位秒
+      * @param unknown $key
+      */
+    public function ttl($key)
+    {
+        return $this->redis->ttl($key);
+    }
+
+    public function expireAt($key,$time)
+    {
+        return $this->redis->expireAt($key,$time);
+    }
+
+    public function close()
+    {
+        return $this->redis->close();
+    }
+
+    /**
+     * 关闭所有连接
+     */
+    public static function closeAll()
+    {
+        foreach(self::$_instance as $o)
+        {
+            if($o instanceof self)
+                $o->close();
+        }
+    }
+
+    public function dbSize()
+    {
+        return $this->redis->dbSize();
+    }
+
+    public function randomKey()
+    {
+        return $this->redis->randomKey();
+    }
+
+    /*********************事务的相关方法************************/
+
+    /**
+     * 监控key,就是一个或多个key添加一个乐观锁
+     * 在此期间如果key的值如果发生的改变，刚不能为key设定值
+     * 可以重新取得Key的值。
+     * @param unknown $key
+     */
+    public function watch($key)
+    {
+        return $this->redis->watch($key);
+    }
+
+    /**
+     * 取消当前链接对所有key的watch
+     *  EXEC 命令或 DISCARD 命令先被执行了的话，那么就不需要再执行 UNWATCH 了
+     */
+    public function unwatch()
+    {
+        return $this->redis->unwatch();
+    }
+
+    /**
+     * 开启一个事务
+     * 事务的调用有两种模式Redis::MULTI和Redis::PIPELINE，
+     * 默认是Redis::MULTI模式，
+     * Redis::PIPELINE管道模式速度更快，但没有任何保证原子性有可能造成数据的丢失
+     */
+    public function multi($type=\Redis::MULTI)
+    {
+        return $this->redis->multi($type);
+    }
+
+    /**
+     * 执行一个事务
+     * 收到 EXEC 命令后进入事务执行，事务中任意命令执行失败，其余的命令依然被执行
+     */
+    public function exec()
+    {
+        return $this->redis->exec();
+    }
+
+    /**
+     * 回滚一个事务
+     */
+    public function discard()
+    {
+        return $this->redis->discard();
+    }
 }
