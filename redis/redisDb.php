@@ -426,7 +426,7 @@ class redisDb
 
     public function lSet($key, $index, $value)
     {
-        return $this->redis->lSet($key,$index,$value);
+        return $this->redis->lSet($key, $index, $value);
     }
 
     /**
@@ -435,12 +435,181 @@ class redisDb
      * count<0 从尾部开始
      *  >0　从头部开始
      *  =0　删除全部
+     *
      * @param unknown $key
      * @param unknown $count
      * @param unknown $value
      */
-    public function lRem($key,$count,$value)
+    public function lRem($key, $count, $value)
     {
-        return $this->redis->lRem($key,$value,$count);
+        return $this->redis->lRem($key, $value, $count);
     }
+
+    /********有序集合排序操作*************/
+
+    public function zadd($key, $order, $value)
+    {
+        return $this->redis->zAdd($key, $order, $value);
+    }
+
+    public function zIncrBy($key, $value, $num)
+    {
+        return $this->redis->zIncrBy($key, $value, $num);
+
+    }
+
+    public function zRem($key, $value)
+    {
+        return $this->redis->zRem($key, $value);
+    }
+
+    /**
+     * 集合以order递增排列后，0表示第一个元素，-1表示最后一个元素
+     *
+     * @param string $key
+     * @param int    $start
+     * @param int    $end
+     *
+     * @return array|bool
+     */
+    public function zRange($key, $start, $end)
+    {
+        return $this->redis->zRange($key, $start, $end);
+    }
+
+    /**
+     * 集合以order递减排列后，0表示第一个元素，-1表示最后一个元素
+     *
+     * @param string $key
+     * @param int    $start
+     * @param int    $end
+     *
+     * @return array|bool
+     */
+    public function zRevRange($key, $start, $end)
+    {
+        return $this->redis->zRevRange($key, $start, $end);
+    }
+
+    /**
+     * 集合以order递增排列后，返回指定order之间的元素。
+     * min和max可以是-inf和+inf　表示最大值，最小值
+     *
+     * @param string $key
+     * @param int    $start
+     * @param int    $end
+     *
+     * @package array $option 参数
+     *     withscores=>true，表示数组下标为Order值，默认返回索引数组
+     *     limit=>array(0,1) 表示从0开始，取一条记录。
+     * @return array|bool
+     */
+
+    public function zRangeByScore($key, $start = '-inf', $end = "+inf", $option = array())
+    {
+        return $this->redis->zRangeByScore($key, $start, $end, $option);
+    }
+
+    /**
+     * 集合以order递减排列后，返回指定order之间的元素。
+     * min和max可以是-inf和+inf　表示最大值，最小值
+     *
+     * @param string $key
+     * @param int    $start
+     * @param int    $end
+     *
+     * @package array $option 参数
+     *     withscores=>true，表示数组下标为Order值，默认返回索引数组
+     *     limit=>array(0,1) 表示从0开始，取一条记录。
+     * @return array|bool
+     */
+    public function zRevRangeByScore($key, $start = '-inf', $end = "+inf", $option = array())
+    {
+        return $this->redis->zRevRangeByScore($key, $start, $end, $option);
+    }
+
+    public function zCount($key, $start, $end)
+    {
+        return $this->redis->zCount($key, $start, $end);
+    }
+
+    public function zScore($key, $value)
+    {
+        return $this->redis->zScore($key, $value);
+    }
+
+    public function zRank($key, $value)
+    {
+        return $this->redis->zRank($key, $value);
+    }
+
+    public function zRevRank($key, $value)
+    {
+        return $this->redis->zRevRange($key, $value);
+    }
+
+    public function zRemRangeByScore($key, $start, $end)
+    {
+        return $this->redis->zRemRangeByScore($key, $start, $end);
+    }
+
+    public function zCard($key)
+    {
+        return $this->redis->zCard($key);
+    }
+
+
+    /*************redis　无序集合操作命令*****************/
+
+    public function sMember($key)
+    {
+        return $this->redis->sMembers($key);
+    }
+
+    public function sDiff($key1, $key2)
+    {
+        return $this->redis->sDiff($key1, $key2);
+    }
+
+    /**
+     * 添加集合。由于版本问题，扩展不支持批量添加。这里做了封装
+     *
+     * @param unknown      $key
+     * @param string|array $value
+     */
+    public function sAdd($key, $value)
+    {
+        if (!is_array($value)) {
+            $arr = array($value);
+        } else {
+            $arr = $value;
+        }
+        foreach ($arr as $row) {
+            $this->redis->sAdd($key, $row);
+        }
+    }
+
+
+    public function scard($key)
+    {
+        return $this->redis->sCard($key);
+    }
+
+    public function sRem($key)
+    {
+        return $this->redis->sRem($key);
+    }
+
+    /*************redis管理操作命令*****************/
+
+    /**
+     * 选择数据库
+     * @param int $dbId 数据库ID号
+     * @return bool
+     */
+    public function select($dbId)
+    {
+        return $this->redis->select($dbId);
+    }
+
 }
