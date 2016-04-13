@@ -49,4 +49,6 @@ class Singleton
         }
         return  self::$_instance;
     }
+
+
 }
