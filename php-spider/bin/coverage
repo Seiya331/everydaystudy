@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+tmpfile="$(mktemp -t coverage).html"
+phpunit --coverage-html="$tmpfile" && open "$tmpfile/index.html"
